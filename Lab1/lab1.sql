@@ -5,6 +5,15 @@ WHERE M.`birthDay` = 0 OR M.`birthMonth` = 0 OR M.`birthYear` = 0;
 
 SELECT COUNT(*) FROM Master AS M
 WHERE M.`birthDay` = "" OR M.`birthMonth` = "" OR M.`birthYear` = "";
+/*
++----------+
+| COUNT(*) |
++----------+
+|      449 |
++----------+
+1 row in set (0.02 sec)
+*/
+
 
 -- 1b
 SELECT
@@ -14,8 +23,15 @@ WHERE M.deathYear = '' AND M.deathMonth = '' AND  M.deathDay = '' AND  M.deathCo
 -
 (SELECT count(DISTINCT M.playerID) FROM HallOfFame AS H LEFT outer join Master AS M
 ON H.playerID = M.playerID 
-WHERE M.deathYear <> '' OR  M.deathMonth <> '' OR  M.deathDay <> '' OR  M.deathCountry <> '' OR  M.deathState <> '' OR  M.deathCity <> '');
-
+WHERE M.deathYear <> '' OR  M.deathMonth <> '' OR  M.deathDay <> '' OR  M.deathCountry <> '' OR  M.deathState <> '' OR  M.deathCity <> '') as difference;
+/*
++------------+
+| difference |
++------------+
+|        -47 |
++------------+
+1 row in set (0.05 sec)
+*/
 
 -- 1c
 SELECT M.nameFirst, M.nameGiven, M.nameLast, SUM(S.salary) as SS FROM Salaries AS S LEFT OUTER JOIN Master AS M
@@ -23,6 +39,14 @@ USING (playerID)
 GROUP BY playerID 
 ORDER BY SS DESC
 LIMIT 1;
+/*
++-----------+--------------------+-----------+-----------+
+| nameFirst | nameGiven          | nameLast  | SS        |
++-----------+--------------------+-----------+-----------+
+| Alex      | Alexander Enmanuel | Rodriguez | 398416252 |
++-----------+--------------------+-----------+-----------+
+1 row in set (0.17 sec)
+*/
 
 -- 1d
 SELECT
@@ -30,6 +54,15 @@ SELECT
 /
 (SELECT COUNT(DISTINCT playerID) FROM Batting)
 AS average_HR;
+/*
++------------+
+| average_HR |
++------------+
+|    15.2938 |
++------------+
+1 row in set (0.16 sec)
+*/
+
 
 -- 1e
 SELECT
@@ -39,6 +72,15 @@ SELECT
 (SELECT playerID FROM Batting as B
 GROUP BY playerID
 HAVING Sum(B.HR) > 0) AS T) as average_HR_gt1HR;
+/*
++------------------+
+| average_HR_gt1HR |
++------------------+
+|          37.3944 |
++------------------+
+1 row in set (0.37 sec)
+*/
+
 
 -- 1f
 SELECT count(*) FROM
@@ -68,7 +110,14 @@ AS average_SHO
 )) AS T_goodpitcher
 
 using (playerID);
-
+/*
++----------+
+| count(*) |
++----------+
+|       39 |
++----------+
+1 row in set (0.74 sec)
+*/
 
 -- 2
 LOAD DATA LOCAL INFILE "~/Downloads/Fielding.csv" INTO TABLE Fielding
@@ -264,16 +313,39 @@ ADD FOREIGN KEY (park.key) REFERENCES Parks(park.key);
 SELECT name FROM user 
 ORDER BY review_count DESC
 LIMIT 1;
-
+/*
++--------+
+| name   |
++--------+
+| Victor |
++--------+
+1 row in set (0.70 sec)
+*/
 
 -- b
 SELECT name FROM business 
 ORDER BY review_count DESC
 LIMIT 1;
-
+/*
++--------------+
+| name         |
++--------------+
+| Mon Ami Gabi |
++--------------+
+1 row in set (0.13 sec)
+*/
 
 -- c 
 SELECT AVG(review_count) FROM user;
+/*
++-------------------+
+| AVG(review_count) |
++-------------------+
+|           24.3193 |
++-------------------+
+1 row in set (0.69 sec)
+*/
+
 
 -- d
 SELECT COUNT(*) FROM 
@@ -281,17 +353,39 @@ SELECT COUNT(*) FROM
 (SELECT AVG(stars) as avg_stars, user_id FROM review  
 GROUP BY user_id ) as B
 USING (user_id)
-WHERE ABS(A.average_stars - B.avg_stars) > 0.5 
-;
+WHERE ABS(A.average_stars - B.avg_stars) > 0.5;
+/* 
++----------+
+| COUNT(*) |
++----------+
+|       66 |
++----------+
+1 row in set (13.60 sec) 
+*/
 
 -- e 
 SELECT
 (SELECT count(*) FROM user Where review_count > 10)
 /
 (SELECT count( distinct user_id) FROM user) as fraction;
-
+/* 
++----------+
+| fraction |
++----------+
+|   0.3311 |
++----------+
+1 row in set (1.85 sec) 
+*/
 
 -- f
 SELECT AVG(LENGTH(text)) FROM user as U inner join review as R
 USING (user_id)
 WHERE U.review_count > 10;
+/*
++-------------------+
+| AVG(LENGTH(text)) |
++-------------------+
+|          698.7808 |
++-------------------+
+1 row in set (42.83 sec)
+*/
