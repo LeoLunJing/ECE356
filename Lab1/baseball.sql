@@ -5,6 +5,7 @@ WHERE M.`birthDay` = 0 OR M.`birthMonth` = 0 OR M.`birthYear` = 0;
 
 SELECT COUNT(*) FROM Master AS M
 WHERE M.`birthDay` = "" OR M.`birthMonth` = "" OR M.`birthYear` = "";
+
 /*
 +----------+
 | COUNT(*) |
@@ -24,6 +25,7 @@ WHERE M.deathYear = '' AND M.deathMonth = '' AND  M.deathDay = '' AND  M.deathCo
 (SELECT count(DISTINCT M.playerID) FROM HallOfFame AS H LEFT outer join Master AS M
 ON H.playerID = M.playerID 
 WHERE M.deathYear <> '' OR  M.deathMonth <> '' OR  M.deathDay <> '' OR  M.deathCountry <> '' OR  M.deathState <> '' OR  M.deathCity <> '') as difference;
+
 /*
 +------------+
 | difference |
@@ -173,67 +175,106 @@ SELECT count(*) FROM Teams;
 SELECT count(*) FROM Teams as A inner join Teams as B 
 Where A.yearID = B.yearID AND A.teamID = B.teamID;
 
+SET foreign_key_checks = 0;
+
+-- Primary Keys
 
 -- 2.1 Master
 ALTER TABLE Master ADD PRIMARY KEY (playerID);
-
--- 2.2 Batting Table
-ALTER TABLE Batting 
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
-ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
-
--- 2.3 Pitching table
-ALTER TABLE Pitching 
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
-ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
-
--- 2.4 Fielding Table
-ALTER TABLE Fielding 
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
-ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
-
--- 2.5 AllstarFull table
-ALTER TABLE AllstarFull 
-ADD PRIMARY KEY (gameID, playerID, yearID, teamID)
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
-ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
-
--- 2.6  HallOfFame table
-ALTER TABLE AllstarFull 
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
-ADD FOREIGN KEY (yearID) REFERENCES Teams(yearID);
-
--- 2.7 Managers table
-ALTER TABLE Managers 
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
-ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
 
 -- 2.8 Teams table
 ALTER TABLE Teams 
 ADD PRIMARY KEY (yearID, teamID);
 
--- 2.9 BattlingPost table
-ALTER TABLE Batting 
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
-ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
-
--- 2.10 PitchingPost table
-ALTER TABLE Pitching 
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
-ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID); 
+-- 2.5 AllstarFull table
+ALTER TABLE AllstarFull 
+ADD PRIMARY KEY (gameID, playerID, yearID, teamID);
 
 -- 2.11 TeamFranchises table
 ALTER TABLE TeamFranchises 
 ADD PRIMARY KEY (franchID);
 
+-- 2.16 SeriesPost table
+ALTER TABLE ManagersHalf 
+ADD PRIMARY KEY (yearID);
+
+-- 2.17 AwardsManagers table
+ALTER TABLE AwardsManagers
+ADD PRIMARY KEY (awardID, yearID, playerID);
+
+-- 2.18 AwardsPlayers table
+ALTER TABLE AwardsPlayers
+ADD PRIMARY KEY (awardID, yearID, lgID, playerID);
+
+-- 2.19 AwardsShareManagers table
+ALTER TABLE AwardsShareManagers
+ADD PRIMARY KEY (awardID, yearID, playerID);
+
+-- 2.20 AwardsSharePlayers table
+ALTER TABLE AwardsSharePlayers
+ADD PRIMARY KEY (awardID, yearID, playerID);
+
+-- 2.23 Schools table
+ALTER TABLE Schools
+ADD PRIMARY KEY (schoolID);
+
+-- 2.26 Parks table
+ALTER TABLE Parks
+ADD PRIMARY KEY (`park.key`);
+
+
+/* Foreign Keys*/
+
+-- 2.2 Batting Table
+ALTER TABLE Batting 
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID), 
+ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
+
+
+-- 2.3 Pitching table
+ALTER TABLE Pitching 
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
+ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
+
+
+-- 2.4 Fielding Table
+ALTER TABLE Fielding 
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
+ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
+
+-- 2.5 AllstarFull table
+ALTER TABLE AllstarFull 
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
+ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
+
+-- 2.6  HallOfFame table
+ALTER TABLE AllstarFull 
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
+ADD FOREIGN KEY (yearID) REFERENCES Teams(yearID);
+
+-- 2.7 Managers table
+ALTER TABLE Managers 
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
+ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
+
+-- 2.9 BattlingPost table
+ALTER TABLE Batting 
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
+ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
+
+-- 2.10 PitchingPost table
+ALTER TABLE Pitching 
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
+ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID); 
+
 -- 2.12 FieldingOF table
 ALTER TABLE FieldingOF 
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
 ADD FOREIGN KEY (yearID) REFERENCES Teams(yearID);
 
 -- 2.13 ManagersHalf table
 ALTER TABLE ManagersHalf 
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
 ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
 
 -- 2.14 TeamsHalf table
@@ -242,150 +283,50 @@ ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
 
 -- 2.15 Salaries table
 ALTER TABLE Salaries 
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
 ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
-
--- 2.16 SeriesPost table
-ALTER TABLE ManagersHalf 
-ADD PRIMARY KEY (yearID);
 
 -- 2.17 AwardsManagers table
 ALTER TABLE AwardsManagers
-ADD PRIMARY KEY (awardID, yearID, playerID)
 ADD FOREIGN KEY (playerID) REFERENCES Master(playerID);
+
 
 -- 2.18 AwardsPlayers table
 ALTER TABLE AwardsPlayers
-ADD PRIMARY KEY (awardID, yearID, lgID, playerID)
 ADD FOREIGN KEY (playerID) REFERENCES Master(playerID);
 
 -- 2.19 AwardsShareManagers table
 ALTER TABLE AwardsShareManagers
-ADD PRIMARY KEY (awardID, yearID, playerID)
 ADD FOREIGN KEY (playerID) REFERENCES Master(playerID);
 
 -- 2.20 AwardsSharePlayers table
 ALTER TABLE AwardsSharePlayers
-ADD PRIMARY KEY (awardID, yearID, playerID)
 ADD FOREIGN KEY (playerID) REFERENCES Master(playerID);
 
 -- 2.21 FieldingPost table
 ALTER TABLE FieldingPost
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
 ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
 
 -- 2.22 Appearances table
 ALTER TABLE Appearances
-ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID)
+ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID),
 ADD FOREIGN KEY (playerID) REFERENCES Master(playerID);
-
--- 2.23 Schools table
-ALTER TABLE Schools
-ADD PRIMARY KEY (schoolID);
 
 -- 2.24 CollegePlaying table
 ALTER TABLE CollegePlaying
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
 ADD FOREIGN KEY (schoolID) REFERENCES Schools(schoolID);
 
 -- 2.25 FieldingOFsplit table
 ALTER TABLE FieldingOFsplit
-ADD FOREIGN KEY (playerID) REFERENCES Master(playerID)
+ADD FOREIGN KEY (playerID) REFERENCES Master(playerID),
 ADD FOREIGN KEY (yearID, teamID) REFERENCES Teams(yearID, teamID);
-
--- 2.26 Parks table
-ALTER TABLE Parks
-ADD PRIMARY KEY (park.key);
 
 -- 2.27 HomeGames table
 ALTER TABLE HomeGames
-ADD PRIMARY KEY (park.key)
-ADD FOREIGN KEY (park.key) REFERENCES Parks(park.key);
+ADD FOREIGN KEY (`park.key`) REFERENCES Parks(`park.key`);
 
 
+SET foreign_key_checks = 1;
 
-
-/*
-	YELP 
-*/
-
--- a 
-SELECT name FROM user 
-ORDER BY review_count DESC
-LIMIT 1;
-/*
-+--------+
-| name   |
-+--------+
-| Victor |
-+--------+
-1 row in set (0.70 sec)
-*/
-
--- b
-SELECT name FROM business 
-ORDER BY review_count DESC
-LIMIT 1;
-/*
-+--------------+
-| name         |
-+--------------+
-| Mon Ami Gabi |
-+--------------+
-1 row in set (0.13 sec)
-*/
-
--- c 
-SELECT AVG(review_count) FROM user;
-/*
-+-------------------+
-| AVG(review_count) |
-+-------------------+
-|           24.3193 |
-+-------------------+
-1 row in set (0.69 sec)
-*/
-
-
--- d
-SELECT COUNT(*) FROM 
-(SELECT user_id, average_stars FROM user) as A inner join 
-(SELECT AVG(stars) as avg_stars, user_id FROM review  
-GROUP BY user_id ) as B
-USING (user_id)
-WHERE ABS(A.average_stars - B.avg_stars) > 0.5;
-/* 
-+----------+
-| COUNT(*) |
-+----------+
-|       66 |
-+----------+
-1 row in set (13.60 sec) 
-*/
-
--- e 
-SELECT
-(SELECT count(*) FROM user Where review_count > 10)
-/
-(SELECT count( distinct user_id) FROM user) as fraction;
-/* 
-+----------+
-| fraction |
-+----------+
-|   0.3311 |
-+----------+
-1 row in set (1.85 sec) 
-*/
-
--- f
-SELECT AVG(LENGTH(text)) FROM user as U inner join review as R
-USING (user_id)
-WHERE U.review_count > 10;
-/*
-+-------------------+
-| AVG(LENGTH(text)) |
-+-------------------+
-|          698.7808 |
-+-------------------+
-1 row in set (42.83 sec)
-*/
